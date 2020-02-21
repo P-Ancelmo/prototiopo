@@ -50,9 +50,10 @@ flutter:
     - assets/saude.png
     - assets/jjj.bmp
     - assets/anatomia.png
-    - assets/calculo.jpg
+    - assets/calculo.png
     - assets/matematica.png
-    - assets/questionario.jpg
+    - assets/questionario.png
+    - assets/teoria.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
