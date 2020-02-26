@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget{
   }
 }
 
+//Base de todas as telas que serão criadas
 class Base extends StatelessWidget{
   final Widget widget;
   final Widget tituloAppBar;
@@ -29,19 +30,20 @@ class Base extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: Colors.deepPurple,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         leading: leading,
         title: tituloAppBar,
-        backgroundColor: Colors.cyan,
+        backgroundColor: Colors.deepPurple.shade600,
       ),
       body: Center(
         child: widget,
       ),
-    );      
+    );
   }
 }
 
+//Botão generico que fica na Tela inicial e nas demais telas
 class BotaoDoGrid extends StatelessWidget{
   final String nome;
   String caminhoImagem;
@@ -52,7 +54,7 @@ class BotaoDoGrid extends StatelessWidget{
   Widget build(BuildContext context) {
     if(caminhoImagem==null){caminhoImagem='assets/jjj.bmp';};
     return Center(
-      child: FlatButton(                      
+      child: FlatButton(
           onPressed: (){
             if(proximaTela!=null){
               Navigator.push(
@@ -68,14 +70,16 @@ class BotaoDoGrid extends StatelessWidget{
           child: SizedBox(
             width: 150,
             height: 200,
-            child: GridView.count(
-              crossAxisCount: 1,
-              
+            child: Column(              
               children: <Widget>[
-                Image(image: AssetImage('$caminhoImagem'), 
-                  width: 150.0,height: 100.0
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(20.0),
+                  child: Image(image: AssetImage('$caminhoImagem'), 
+                    width: 150.0,height: 100.0,
+                    fit: BoxFit.fill,                
+                  ),
                 ),
-                Text('$nome', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                Text('$nome', textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))
               ],
             ),
           ),
@@ -116,6 +120,7 @@ class BotaoDaLista extends StatelessWidget{
 
 }
 
+//fica no leading da appBar pra voltar à tela anterior
 class BotaoVolta extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -126,9 +131,9 @@ class BotaoVolta extends StatelessWidget{
       child: Icon(Icons.arrow_back, color: Colors.white,)
     );
   }
-
 }
 
+//GridView pré-configurado pra ficar na tela principal e demais telas - recebe como filhos(children) BotaoDoGrid
 class Grid extends StatelessWidget{
   final String nomeBotao;
   final List<Widget> filhos;
@@ -145,41 +150,56 @@ class Grid extends StatelessWidget{
   }
 }
 
-class Lista extends StatelessWidget{
-  final List<Widget> corpo;
+//Card que pode ser precionado. É utilizado na tela das materias para indicar assuntos
+class CardBotao extends StatelessWidget{
+  final String titulo;
+  final String subtitulo;
+  final Widget proximaTela;
 
-  Lista({this.corpo});
+  CardBotao({@required this.titulo, @required this.subtitulo, this.proximaTela});
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: corpo,
-    );
-  }
-}
-
-class Expansivel extends StatelessWidget{
-  @override
-  Widget build(BuildContext context) {
-    return ExpansionPanelList(
-      children: <ExpansionPanel>[
-        ExpansionPanel(
-          headerBuilder: (BuildContext context, bool expansivel){
-            expansivel = true;
-            return ListTile(
-              title: Text('teste'),
+    return Card(
+      color: Colors.blueGrey[600],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: RaisedButton(
+        shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+        color: Colors.blueGrey[600],
+        onPressed: (){
+          if(proximaTela!=null){
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context){
+                  return proximaTela;
+                }
+              )
             );
-          },
-          body: Text('hehe'),
-          isExpanded: true,
-
-        ),
-      ],
+          }
+        },
+        child: ListTile(
+         title: Text('$titulo', 
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+            ),
+          ),
+          subtitle: Text('$subtitulo', 
+              style: TextStyle(color: Colors.white
+            ),
+          ),
+       ),
+      ),
     );
   }
-
 }
 
+//tela inicial
 class TelaHome extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -187,7 +207,7 @@ class TelaHome extends StatelessWidget{
       tituloAppBar: Text('Minerva Short'),
       widget: Grid(
         filhos: <Widget>[
-          BotaoDoGrid(nome: 'Mat/Comp',caminhoImagem: 'assets/matematica.png' ,proximaTela: TelaMat(),),
+          BotaoDoGrid(nome: 'Matemática',caminhoImagem: 'assets/matematica.png' ,proximaTela: TelaMat(),),
           BotaoDoGrid(nome: 'Saúde',caminhoImagem: 'assets/saude.png', proximaTela: TelaMed(),)
         ],
       ),
@@ -195,6 +215,7 @@ class TelaHome extends StatelessWidget{
   }  
 }
 
+//tela da materia matemática
 class TelaMat extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -203,13 +224,14 @@ class TelaMat extends StatelessWidget{
       tituloAppBar: Text('Matemática'),
       widget: Grid(
         filhos: <Widget>[
-          BotaoDoGrid(nome: 'Cálculo',caminhoImagem:'assets/calculo.jpg' ,proximaTela: TelaCalculo(),)
+          BotaoDoGrid(nome: 'Cálculo',caminhoImagem:'assets/calculo.png' ,proximaTela: TelaCalculo(),)
         ],
       ),
     );
   }
 }
 
+//tela da materia de saúde
 class TelaMed extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
@@ -223,76 +245,100 @@ class TelaMed extends StatelessWidget{
       ),
     );
   }
-
 }
 
+//tela da materia cálculo
 class TelaCalculo extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Base(
       tituloAppBar: Text('Cálculo'),
-      widget: Lista(
-        corpo: <Widget>[
-          BotaoDaLista(titulo: Text('Binomios')),
-          BotaoDaLista(titulo: Text('Derivada')),
-          BotaoDaLista(titulo: Text('Funções')),
-          BotaoDaLista(titulo: Text('Exponencial')),
-          BotaoDaLista(titulo: Text('Integral'),subtitulo: Text('Definição, integral por partes, por substituição e funçoes parciais'),
-            proximaTela: TelaQuestionario(tituloAppBar: Text('Integral'),),
+      widget: Column(
+        children: <Widget>[
+          CardBotao(
+            titulo: 'Derivada',
+            subtitulo: 'Definição',
           ),
-          BotaoDaLista(titulo: Text('Limite'), subtitulo: Text('Definição, L Hospital,inteterminações'),
-            proximaTela: TelaQuestionario(tituloAppBar: Text('Limite'),),
+
+          CardBotao(          
+            titulo: 'Integral',
+            subtitulo: 'Definição, integral por partes, por substituição e funçoes parciais',
+            proximaTela: TelaQuestionario(
+              tituloAppBar: Text('Integral'),
+              telaTeoria: TelaTeoria(
+                <TextoTeoria>[
+                  TextoTeoria(
+                    titulo: 'Integral',
+                    descricao: 'É o inverso da derivada, dessa forma, ao ver integral de *alguma coisa*, deve-se pensar qual a função cuja derivada seja essa *alguma coisa*',
+                  ),
+                  /*TextoTeoria(
+                    titulo: 'Integral por substituição',
+                    descricao: '',
+                  ),*/
+                ],
+              ),
+            ),
           ),
-          BotaoDaLista(titulo: Text('Logaritmo')),
-          BotaoDaLista(titulo: Text('Pré Cálculo')),          
-          
         ],
       ),
     );
   }
 }
 
+//tela da materia anatomia
 class TelaAnatomia extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Base(
       tituloAppBar: Text('Anatomia'),
-      widget: Lista(
-        corpo: <Widget>[
-          BotaoDaLista(titulo: Text('Sistema articular'),
-            subtitulo: Text(''),
+      widget: Column(
+        children: <Widget>[
+          CardBotao(
+            titulo: 'Sistema articular',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
               tituloAppBar: Text('Sistema articular'),
+              //telaTeoria: TelaTeoria(),
             ),
           ),
-          BotaoDaLista(titulo: Text('Sistema circulatório'), 
-            subtitulo: Text(''),
+
+          CardBotao(
+            titulo: 'Sistema circulatório',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
-              tituloAppBar: Text('Sistema circulatorio'),
+              tituloAppBar: Text('Sistema circulatório'),
             ),
           ),
-          BotaoDaLista(titulo: Text('Sistema digestório'),
-            subtitulo: Text(''),
+
+          CardBotao(
+            titulo: 'Sistema digestório',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
               tituloAppBar: Text('Sistema digestório'),
             ),
           ),
-          BotaoDaLista(titulo: Text('Sistema excretor'),
-            subtitulo: Text(''),
+
+          CardBotao(
+            titulo: 'Sistema excretor',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
               tituloAppBar: Text('Sistema excretor'),
             ),
           ),
-          BotaoDaLista(titulo: Text('Sistema muscular'),
-            subtitulo: Text(''),
+
+          CardBotao(
+            titulo: 'Sistema muscular',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
-              tituloAppBar: Text('Sistema Muscular'),
+              tituloAppBar: Text('Sistema muscular'),
             ),
           ),
-          BotaoDaLista(titulo: Text('Sistema respiratório'),
-            subtitulo: Text(''),
+
+          CardBotao(
+            titulo: 'Sistema respiratório',
+            subtitulo: '',
             proximaTela: TelaQuestionario(
-              tituloAppBar: Text('Sistema respiratorio'),
+              tituloAppBar: Text('Sistema respiratório'),
             ),
           ),
         ],
@@ -301,25 +347,80 @@ class TelaAnatomia extends StatelessWidget{
   }
 }
 
+//tela da parte onde ficam os questionários e a parte teórica - é a mesma tela para todos
 class TelaQuestionario extends StatelessWidget{
   final Widget tituloAppBar;
   final Widget telaTeoria;
   final Widget telaQuestionarioAle;
   final Widget telaQuestionarioTop;
   final Widget telaQuestionarioTemp;
+  
   TelaQuestionario({this.tituloAppBar,this.telaTeoria, this.telaQuestionarioAle, this.telaQuestionarioTop, this.telaQuestionarioTemp});
+  
   @override
   Widget build(BuildContext context) {
     return Base(
       tituloAppBar: tituloAppBar,
       widget: Grid(
         filhos: <Widget>[
-          BotaoDoGrid(nome: 'Teoria',caminhoImagem:'assets/questionario.jpg' ,proximaTela: telaTeoria,),
-          BotaoDoGrid(nome: 'Questionario aleatório',caminhoImagem:'assets/questionario.jpg' ,proximaTela: telaQuestionarioAle,),
-          BotaoDoGrid(nome: 'Questionario por tópico',caminhoImagem:'assets/questionario.jpg' ,proximaTela: telaQuestionarioTop),
-          BotaoDoGrid(nome: 'Questionario c/ Tempo',caminhoImagem:'assets/questionario.jpg' ,proximaTela: telaQuestionarioTemp),
+          BotaoDoGrid(nome: 'Teoria',caminhoImagem:'assets/teoria.png',proximaTela: telaTeoria,),
+          BotaoDoGrid(nome: 'Questionario aleatório',caminhoImagem:'assets/questionario.png' ,proximaTela: telaQuestionarioAle,),
+          BotaoDoGrid(nome: 'Questionario por tópico',caminhoImagem:'assets/questionario.png' ,proximaTela: telaQuestionarioTop),
+          BotaoDoGrid(nome: 'Questionario c/ Tempo',caminhoImagem:'assets/questionario.png' ,proximaTela: telaQuestionarioTemp),
         ],
       ),
     );
   }
 }
+
+// tela na qual fica a teoria
+class TelaTeoria extends StatelessWidget{
+  
+  final List<TextoTeoria> textos;
+
+  TelaTeoria(this.textos);
+
+  @override
+  Widget build(BuildContext context) {
+    return Base(
+      tituloAppBar: Text('Teoria'),
+      widget: Column(
+        children: textos,
+      ),
+    ); 
+  }
+}
+
+//estrutura utilizada para montar a TelaTeoria - predefinições de cor, tamanho e estilo do texto
+class TextoTeoria extends StatelessWidget{
+  
+  final String titulo;
+  final String descricao;
+
+  TextoTeoria({@required this.titulo, @required this.descricao});
+  
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        const SizedBox( height: 16.0,),
+        Text('$titulo', 
+          style: TextStyle(fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox( height: 8.0,),
+        Divider(color: Colors.blueGrey[600]),
+        const SizedBox( height: 8.0,),
+        Text('$descricao',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white),
+        ),
+        const SizedBox( height: 16.0,),
+        //Divider(color: Colors.blueGrey[600]),
+      ],
+    );
+  }
+}
+
